@@ -1,0 +1,95 @@
+/* Custom visual polish for Live Pairs Analytics */
+/* Instagram-inspired theme */
+:root{
+  --ig-gradient: linear-gradient(90deg,#feda75 0%,#fa7e1e 25%,#d62976 50%,#962fbf 75%,#4f5bd5 100%);
+  --card-radius: 14px;
+  --bg: #fafafa;
+  --muted: #8e8e8e;
+}
+body{
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  padding-top: 72px; /* reserve space for sticky header */
+}
+/* Header like Instagram: sticky gradient bar */
+#navbar{
+  background: var(--ig-gradient);
+  border: none !important;
+  padding: 10px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  color: #fff;
+}
+.navbar-brand{ display:flex; align-items:center; color: #07204A !important; }
+/* keep navbar children above the gradient */
+.navbar > *{ position: relative; z-index: 1; }
+/* center the app content by constraining width, but keep Bootstrap grid behavior */
+#root-container{ display:block; }
+.container-fluid{ max-width:1100px; margin-left:auto; margin-right:auto; }
+/* Hero as stories strip */
+#hero-card{ border-radius:12px; padding:12px; margin-top:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06); background: #fff; }
+/* Feed cards */
+.card{ border-radius: var(--card-radius) !important; border: none !important; }
+.card .card-body{ padding:12px; }
+/* Posts (charts) should feel like Instagram posts */
+.js-plotly-plot .plotly .main-svg{ border-radius: 10px; overflow:hidden; }
+/* Sidebar - profile & suggestions */
+.container-fluid{ transition: margin-left 0.22s ease; }
+#sidebar-card{ background: transparent; border: none; }
+/* collapsed by default - slide in when sidebar-open */
+#sidebar-card{
+  position: fixed;
+  top: 72px;
+  left: 0;
+  width: 220px;
+  transform: translateX(-260px);
+  transition: transform 0.22s ease;
+  z-index: 1060;
+}
+body.sidebar-open #sidebar-card{ transform: translateX(0); }
+/* move content when sidebar open on desktop */
+@media (min-width: 992px){
+  body.sidebar-open .container-fluid{ margin-left: 220px; }
+}
+.profile-card{ display:flex; align-items:center; gap:12px; padding:10px; }
+.profile-card img{ width:48px; height:48px; border-radius:50%; }
+.profile-card .name{ font-weight:600; }
+/* uploader box */
+.uploader-box{ border-radius: 8px; border: 1px dashed rgba(0,0,0,0.06); padding: 12px; background: #fff; }
+/* KPIs stacked for a mobile-first feed feel */
+.kpi-card .card-body{ padding: 8px !important; }
+/* Toast styling */
+.toast{ border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12);} 
+/* Responsive: narrow feed on mobile */
+@media (max-width: 992px){
+  .container-fluid{ max-width:680px; padding:0 10px; }
+  #sidebar-card{ display:none; }
+}
+
+/* Dark mode overrides (applied when body has class `dark-mode`) */
+body.dark-mode{
+  --bg: #0b0f14;
+  background: var(--bg);
+  color: #e6edf3;
+}
+body.dark-mode .card{
+  background: #0f172a !important;
+  color: #e6edf3 !important;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+}
+body.dark-mode .uploader-box{ background: #071022; border-color: rgba(255,255,255,0.04); }
+body.dark-mode .kpi-card .card-body{ background: transparent; }
+body.dark-mode .navbar{ box-shadow: none; }
+
+/* Sidebar open behavior */
+body.sidebar-open .container-fluid{ margin-left: 220px; transition: margin-left 0.22s ease; }
+@media (max-width: 992px){
+  body.sidebar-open::after{ content: ''; position: fixed; top: 72px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); z-index: 1050; }
+  body.sidebar-open #sidebar-card{ position: fixed; top: 72px; left: 0; width: 220px; z-index: 1060; background: inherit; box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+}
+
+/* Clickable backdrop for closing sidebar (desktop + mobile) */
+.sidebar-backdrop{ display:none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.25); z-index: 1050; }
+body.sidebar-open .sidebar-backdrop{ display:block; }

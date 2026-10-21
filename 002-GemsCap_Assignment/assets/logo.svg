@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="36" viewBox="0 0 120 36">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect rx="8" ry="8" width="120" height="36" fill="url(#g)" opacity="0.06"/>
+  <g transform="translate(10,6)">
+    <circle cx="10" cy="10" r="8" fill="#0ea5e9" />
+    <path d="M6 14 L10 6 L14 14 Z" fill="#07204A" opacity="0.9"/>
+  </g>
+  <text x="32" y="22" font-family="Segoe UI, Roboto, Helvetica, Arial" font-size="13" fill="#07204A">PairsAnalytics</text>
+</svg>

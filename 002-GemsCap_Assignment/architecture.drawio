@@ -1,0 +1,50 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Architecture">
+    <mxGraphModel dx="1170" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="binance" value="Binance WS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ingest" value="Ingestion&#10;websocket client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="200" y="230" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="upload" value="Upload CSV/OHLC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="200" y="310" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="store" value="Tick Store&#10;(thread-safe DataFrame)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="380" y="260" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="analytics" value="Analytics&#10;hedge ratio, spread, z, ADF, corr" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="590" y="240" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="alerts" value="Alerts + Mini backtest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="590" y="340" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="frontend" value="Dash UI&#10;(charts, controls, exports)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="820" y="280" width="190" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge1" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="binance" target="ingest">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge2" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="upload" target="store">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge3" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="ingest" target="store">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge4" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="store" target="analytics">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge5" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="analytics" target="alerts">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge6" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="alerts" target="frontend">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+
