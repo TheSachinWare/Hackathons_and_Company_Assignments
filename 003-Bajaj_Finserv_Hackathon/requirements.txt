@@ -1,0 +1,29 @@
+# Core API
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+
+# Auth (swap the hand-rolled JWT in security.py for this in production)
+pyjwt==2.9.0
+
+# LLM provider SDK (pick one; anthropic shown as the reference integration)
+anthropic==0.34.2
+google-genai>=1.0.0
+# openai==1.47.0
+python-dotenv==1.0.0
+
+# Production-grade RAG (swap in for backend/rag.py's offline TF-IDF index)
+# sentence-transformers==3.1.1
+# chromadb==0.5.5
+# pgvector==0.3.4
+
+# Production STT/TTS (swap in for browser Web Speech API — see README "Voice")
+# azure-cognitiveservices-speech==1.40.0
+# google-cloud-speech==2.27.0
+
+# Observability
+# opentelemetry-sdk==1.27.0
+# opentelemetry-exporter-otlp==1.27.0
+
+# Rate limiting / caching at scale
+# redis==5.0.8

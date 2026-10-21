@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bajaj Finserv Assistant (Prototype)</title>
+<style>
+  :root {
+    --bg: #071421;
+    --surface: #0f1f33;
+    --surface-alt: #142b42;
+    --border: #23405d;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --blue: #3b82f6;
+    --blue-strong: #0ea5e9;
+    --orange: #fb923c;
+    --card: #112138;
+    --card-strong: #1b3250;
+  }
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    background: radial-gradient(circle at top left, rgba(59,130,246,0.12), transparent 28%), var(--bg);
+    color: var(--text);
+    margin: 0;
+  }
+  header {
+    background: linear-gradient(90deg, var(--blue), #0b1a2d);
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  #app {
+    max-width: 900px;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+    border: 1px solid var(--border);
+  }
+  #chat-log {
+    height: 420px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    background: var(--surface);
+  }
+  .msg {
+    margin: 10px 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    max-width: 85%;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  }
+  .user {
+    background: var(--blue);
+    color: #fff;
+    margin-left: auto;
+  }
+  .bot {
+    background: var(--surface-alt);
+    color: var(--text);
+  }
+  .row {
+    display: flex;
+    gap: 10px;
+  }
+  #msg-input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #0b1a2d;
+    color: var(--text);
+  }
+  #msg-input::placeholder {
+    color: var(--muted);
+  }
+  button.icon {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0 16px;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  button.icon.rec {
+    background: #f97316;
+  }
+  #meta-panel div {
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+  #meta-panel b {
+    color: var(--text);
+  }
+  #consent-box {
+    font-size: 13px;
+    margin-top: 10px;
+    color: var(--muted);
+  }
+  .hidden {
+    display: none;
+  }
+  .flag {
+    color: #fb7185;
+    font-weight: 600;
+  }
+  #prompt-samples {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  #prompt-samples strong {
+    color: var(--text);
+  }
+  #prompt-samples ul {
+    list-style: disc;
+    margin: 8px 0 0 18px;
+    padding: 0;
+  }
+  #prompt-samples li {
+    margin: 4px 0;
+  }
+  #restore-banner {
+    display: none;
+    background: #152b42;
+    color: #cce7ff;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bajaj Finserv &middot; Loan &amp; Mutual Fund Assistant (Prototype)</h1>
+  <span id="who"></span>
+</header>
+
+<div id="app">
+  <div id="welcome-card" class="card">
+    <h3>Welcome</h3>
+    <p>Ask about your own loan account or Bajaj AMC mutual funds. No login is required for this demo.</p>
+    <p style="font-size:12px;color:#666;">This prototype uses a demo customer profile and the attached fund factsheet as its source of truth.</p>
+    <div id="prompt-samples">
+      <strong>Try any of these:</strong>
+      <ul>
+        <li>What is my current loan balance?</li>
+        <li>How much EMI do I pay each month?</li>
+        <li>How many months remain on my loan?</li>
+        <li>Tell me about Bajaj AMC's top mutual funds.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="restore-banner" class="card hidden" style="border-left: 4px solid #4caf50;">
+    <strong>Chat restored.</strong> Your previous conversation was recovered after reload.
+  </div>
+
+  <div id="chat-card" class="card" style="grid-column: 1;">
+    <div id="chat-log"></div>
+    <div id="chat-form" class="row">
+      <input id="msg-input" placeholder="Ask about your loan, or a Bajaj AMC fund..." autocomplete="off" onkeydown="if(event.key==='Enter'){ event.preventDefault(); sendMessage(); }" />
+      <button type="button" class="icon" onclick="sendMessage()">Send</button>
+      <button type="button" class="icon rec" id="mic-btn" onclick="toggleVoice()">🎤</button>
+    </div>
+    <div id="consent-box">
+      <label><input type="checkbox" id="consent-check" onchange="setConsent(this.checked)" /> I'd like to be shown relevant Bajaj AMC mutual fund suggestions based on my profile.</label>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <button type="button" class="icon" style="background:#999;" onclick="clearChat()">Clear conversation</button>
+    </div>
+  </div>
+
+  <div id="meta-panel" class="card hidden">
+    <h3>Under the hood</h3>
+    <div><b>Last latency:</b> <span id="m-latency">-</span> ms</div>
+    <div><b>Prompt tokens:</b> <span id="m-ptok">-</span></div>
+    <div><b>Completion tokens:</b> <span id="m-ctok">-</span></div>
+    <div><b>Ungrounded numbers flagged:</b> <span id="m-flag">-</span></div>
+    <hr/>
+    <div><b>Session avg latency:</b> <span id="s-latency">-</span> ms</div>
+    <div><b>Session total tokens:</b> <span id="s-tokens">-</span></div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8000";
+let sessionPromptTokens = 0, sessionCompletionTokens = 0, latencies = [];
+
+function saveChatState() {
+  const log = document.getElementById('chat-log');
+  const messages = Array.from(log.children).map(el => ({ role: el.classList.contains('user') ? 'user' : 'bot', text: el.textContent }));
+  const state = {
+    messages,
+    sessionPromptTokens,
+    sessionCompletionTokens,
+    latencies,
+  };
+  localStorage.setItem('bajaj_chat_state', JSON.stringify(state));
+}
+
+function loadChatState() {
+  const stateJson = localStorage.getItem('bajaj_chat_state');
+  if (!stateJson) return;
+  try {
+    const state = JSON.parse(stateJson);
+    if (!state || !Array.isArray(state.messages)) return;
+    const log = document.getElementById('chat-log');
+    log.innerHTML = '';
+    state.messages.forEach(msg => addMsg(msg.role, msg.text, false));
+    sessionPromptTokens = state.sessionPromptTokens || 0;
+    sessionCompletionTokens = state.sessionCompletionTokens || 0;
+    latencies = Array.isArray(state.latencies) ? state.latencies : [];
+    if (latencies.length) {
+      document.getElementById('s-latency').textContent = (latencies.reduce((a,b)=>a+b,0)/latencies.length).toFixed(2);
+      document.getElementById('s-tokens').textContent = sessionPromptTokens + sessionCompletionTokens;
+      document.getElementById('restore-banner').classList.remove('hidden');
+    }
+  } catch {
+    localStorage.removeItem('bajaj_chat_state');
+  }
+}
+
+async function setConsent(checked) {
+  await fetch(`${API_BASE}/consent/mf-pitch`, {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({consent: checked})
+  });
+}
+
+function addMsg(role, text, save = true) {
+  const log = document.getElementById('chat-log');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  if (save) saveChatState();
+}
+
+function clearChat() {
+  const log = document.getElementById('chat-log');
+  log.innerHTML = '';
+  sessionPromptTokens = 0;
+  sessionCompletionTokens = 0;
+  latencies = [];
+  document.getElementById('m-latency').textContent = '-';
+  document.getElementById('m-ptok').textContent = '-';
+  document.getElementById('m-ctok').textContent = '-';
+  document.getElementById('m-flag').textContent = '-';
+  document.getElementById('s-latency').textContent = '-';
+  document.getElementById('s-tokens').textContent = '-';
+  localStorage.removeItem('bajaj_chat_state');
+}
+
+async function sendMessage(overrideText) {
+  const input = document.getElementById('msg-input');
+  const text = overrideText || input.value.trim();
+  if (!text) return;
+  addMsg("user", text);
+  input.value = "";
+
+  try {
+    const res = await fetch(`${API_BASE}/chat`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({message: text})
+    });
+
+    if (!res.ok) {
+      let errorText;
+      const responseText = await res.text();
+      try {
+        const errJson = JSON.parse(responseText);
+        errorText = errJson.detail || errJson.message || JSON.stringify(errJson);
+      } catch {
+        errorText = responseText || `HTTP ${res.status}`;
+      }
+      const msg = `Sorry, something went wrong (${res.status}): ${errorText}`;
+      addMsg("bot", msg);
+      return;
+    }
+
+    const data = await res.json();
+    const answer = data.answer || "Sorry, I couldn't get an answer from the server.";
+    addMsg("bot", answer);
+    speak(answer);
+    updateMeta(data.meta);
+    document.getElementById('meta-panel').classList.remove('hidden');
+  } catch (err) {
+    addMsg("bot", `Network error: ${err.message}`);
+  }
+}
+
+function updateMeta(meta) {
+  if (!meta) return;
+  document.getElementById('m-latency').textContent = meta.latency_ms;
+  document.getElementById('m-ptok').textContent = meta.prompt_tokens;
+  document.getElementById('m-ctok').textContent = meta.completion_tokens;
+  document.getElementById('m-flag').innerHTML = (meta.ungrounded_numbers_flagged && meta.ungrounded_numbers_flagged.length)
+      ? `<span class="flag">${meta.ungrounded_numbers_flagged.join(', ')}</span>` : "none";
+
+  sessionPromptTokens += meta.prompt_tokens || 0;
+  sessionCompletionTokens += meta.completion_tokens || 0;
+  latencies.push(meta.latency_ms || 0);
+  document.getElementById('s-latency').textContent = (latencies.reduce((a,b)=>a+b,0)/latencies.length).toFixed(2);
+  document.getElementById('s-tokens').textContent = sessionPromptTokens + sessionCompletionTokens;
+}
+
+// ---------------- Voice (Web Speech API) ----------------
+// Prototype choice: browser-native STT/TTS (Web Speech API) keeps the demo
+// fully client-side with zero extra infra and works well for a hackathon.
+// Production tradeoffs (accuracy across accents/noise, server-side control,
+// multi-language support, telephony-channel voice) are covered in README
+// "Voice interaction: production path".
+let recognizing = false;
+let recognition;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-IN';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    sendMessage(transcript);
+  };
+  recognition.onend = () => { recognizing = false; document.getElementById('mic-btn').textContent = '🎤'; };
+}
+
+function toggleVoice() {
+  if (!recognition) { alert('Voice input not supported in this browser. Try Chrome.'); return; }
+  if (recognizing) { recognition.stop(); return; }
+  recognizing = true;
+  document.getElementById('mic-btn').textContent = '⏹';
+  recognition.start();
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-IN';
+  window.speechSynthesis.speak(utter);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadChatState();
+});
+</script>
+</body>
+</html>
